@@ -9,6 +9,10 @@ player.attack = 5
 player.defence = 2
 player.speed = 5
 
+player.defencePotions = 2
+player.speedPotions = 2
+
 player.potions = 3
 
+player.buffs = {}
 return player

@@ -24,7 +24,30 @@ bossActions.build()
 
 while true do
     print()
+    print("====================================================================================")
     print()
+    for status, buff in pairs(player.buffs) do
+        if buff.value > 0 then
+            if buff.time >= 1 then
+                buff.time = buff.time - 1
+            end
+            if buff.time == 0 then
+                print(string.format("O bônus de %s acabou!", status))
+                player[status] = player[status] - buff.value
+                buff.value = 0
+            end
+        end
+    end
+
+    for status, buff in pairs(player.buffs) do
+        if buff ~= nil and buff.time > 0 then
+            print(string.format("%s. %s -> Acaba em %d turnos", status, buff.description, buff.time))
+        end
+    end
+    print()
+    print("====================================================================================")
+    print()
+
     print(string.format("O que %s deseja fazer em seguida?", player.name))
     local validPlayerActions = playerActions.getValidActions(player, boss)
     for i, action in pairs(validPlayerActions) do
@@ -57,6 +80,7 @@ while true do
     local validBossActions = bossActions.getValidActions(player, boss)
     local bossAction = validBossActions[math.random(#validBossActions)]
     bossAction.execute(player, boss)
+
 
 
     if player.health <= 0 then

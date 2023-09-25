@@ -42,8 +42,65 @@ function actions.build()
         end
     }
 
+    local drinkPotion = {
+        description = "Toma uma das poções que tem na mochila.",
+        requirement = function(player, creature)
+            return player.speedPotions >= 1 or player.defencePotions >= 1
+        end,
+        execute = function(player, creature)
+            local potions = {}
+            potions[#potions + 1] = {
+                description = "Poção de Velocidade",
+                buff = "50% a mais de velocidade base!",
+                quantity = player.speedPotions,
+                status = "speed",
+                multiplier = 0.5,
+                time = 4,
+                type = "speedPotions",
+            }
+            potions[#potions + 1] = {
+                description = "Poção de Defesa",
+                buff = "dobrou a defesa!",
+                quantity = player.defencePotions,
+                status = "defence",
+                multiplier = 2,
+                time = 4,
+                type = "defencePotions"
+            }
+
+            for i, potion in pairs(potions) do
+                if potion.quantity >= 1 then
+                    print(string.format("%d. %s - %d", i, potion.description, potion.quantity))
+                end
+            end
+            print()
+            print("Qual irá tomar?")
+
+            local option = utils.ask()
+            local chosenPotion = potions[option]
+
+            print(string.format("%s toma a poção de %s, ganhando um bônus de %s", player.name,
+                chosenPotion.description,
+                chosenPotion.buff))
+
+            local buffStatus = chosenPotion.status
+            local buffValue = math.floor(player[buffStatus] * chosenPotion.multiplier + 0.1)
+
+            player.buffs[buffStatus] = {
+                description = chosenPotion.description,
+                value = buffValue,
+                time = chosenPotion.time
+            }
+
+            player[buffStatus] = player[buffStatus] + buffValue
+            player[chosenPotion.type] = player[chosenPotion.type] - 1
+        end
+    }
+
+
     actions.list[#actions.list + 1] = swordAttack
     actions.list[#actions.list + 1] = regenPotion
+    actions.list[#actions.list + 1] = drinkPotion
 end
 
 ---Retorna a lista de ações válidas
